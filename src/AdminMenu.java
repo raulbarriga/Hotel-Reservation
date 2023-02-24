@@ -18,54 +18,71 @@ public class AdminMenu {
     /** @noinspection BusyWait*/
     public static void adminMenu() {
         String userInput;
+        boolean enterMode = true;
+
         printAdminMenu();
 
-        do{
+        while (enterMode) {
             userInput = scanner.nextLine();
 
-            if (userInput.length() == 1) {
+            if (userInput.isEmpty()) {
+                // empty input
+                try {
+                    System.out.println("Invalid Input.");
+                    sleep(1000);
+                    adminMenu();
+                } catch(InterruptedException e) {
+                    e.printStackTrace();
+                }
+            } else if (userInput.length() == 1 && userInput.matches("^[1-5]$")) {
+                // valid input
+                enterMode = false;
                 switch (userInput.charAt(0)) {
-                    case '1':
+                    case '1' -> {
                         printAllCustomers();
                         try {
                             sleep(2000);
-                            printAdminMenu();
-                        } catch(InterruptedException ex) {
+                            adminMenu();
+                        } catch (InterruptedException ex) {
                             ex.printStackTrace();
                         }
-                        break;
-                    case '2':
+                    }
+                    case '2' -> {
                         printAllRooms();
                         try {
                             sleep(2000);
-                            printAdminMenu();
-                        } catch(InterruptedException ex) {
+                            adminMenu();
+                        } catch (InterruptedException ex) {
                             ex.printStackTrace();
                         }
-                        break;
-                    case '3':
+                    }
+                    case '3' -> {
                         printAllReservations();
                         try {
                             sleep(2000);
-                            printAdminMenu();
-                        } catch(InterruptedException ex) {
+                            adminMenu();
+                        } catch (InterruptedException ex) {
                             ex.printStackTrace();
                         }
-                        break;
-                    case '4':
-                        addARoom();
-                        break;
-                    case '5':
-                        MainMenu.handleMainMenu();
-                        break;
-                    default:
+                    }
+                    case '4' -> addARoom();
+                    case '5' -> MainMenu.handleMainMenu();
+                    default -> {
                         System.out.println("Unknown action\n");
-                        printAdminMenu();
-                        break;
+                        adminMenu();
+                    }
+                }
+            } else {
+                // all other invalid user input
+                try {
+                    System.out.println("Invalid Input.");
+                    sleep(1000);
+                    adminMenu();
+                } catch(InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
-
-        } while (userInput.charAt(0) != '5' || userInput.length() != 1);
+        }
     }
 
     private static void printAdminMenu() {
@@ -121,7 +138,7 @@ public class AdminMenu {
         String userInput = "y";
         List<IRoom> rooms = new ArrayList<>();
         boolean enterMode = true; // for while loop
-        final String validMoneyFormat = "^\\$?[0-9]{1,3}(?:([,.])[0-9]{3})*\\1?[0-9]{2}$";
+        final String validMoneyFormat = "^\\$?\\d+(,\\d{3})*(\\.\\d+)?$";
 
         while (Character.toLowerCase(userInput.charAt(0)) == 'y') {
 
@@ -147,10 +164,20 @@ public class AdminMenu {
                         ex.printStackTrace();
                     }
                 } else {
-                    enterMode = false;
+                    // check if that room # already exists, null means it doesn't exist
+                    if (adminResource.getARoom(roomNumber) == null) {
+                        enterMode = false;
+                    } else {
+                        try {
+                            System.out.println("Room number already exists.");
+                            sleep(2000);
+                            System.out.println("Enter room number: ");
+                        } catch(InterruptedException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
                 }
             }
-
 
             Double pricePerNight = null;
             System.out.println("Enter price per night: ");
@@ -176,7 +203,7 @@ public class AdminMenu {
                     }
                 } else {
                     try {
-                        pricePerNight = Double.parseDouble(pricePerNightStr);
+                        pricePerNight = Double.parseDouble(pricePerNightStr.replace("$", ""));
                         enterMode = false;
                 } catch (NumberFormatException ex) {
                     System.out.println("Invalid format for room price, decimals have to be separated by a decimal point (.)");

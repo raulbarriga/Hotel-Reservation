@@ -10,9 +10,14 @@ import java.util.Collection;
 import java.util.Date;
 
 public class HotelResource {
-    public static HotelResource INSTANCE;
+    private static HotelResource INSTANCE = null;
     private final CustomerService customerService = CustomerService.getInstance();
     private final ReservationService reservationService = ReservationService.getInstance();
+
+    private HotelResource() {
+        // it's perfectly fine to have this Singleton constructor empty
+        // Private constructor to prevent instantiation outside the class
+    }
 
     public static HotelResource getInstance() {
         if (INSTANCE == null)

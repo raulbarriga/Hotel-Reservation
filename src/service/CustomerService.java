@@ -9,8 +9,13 @@ import java.util.Map;
 // only 1 instance for this class is needed (a Singleton class)
 public class CustomerService {
     // instance static reference
-    private static CustomerService INSTANCE;
+    private static CustomerService INSTANCE = null;
     private static final Map<String, Customer> customers = new HashMap<>();
+
+    private CustomerService() {
+        // it's perfectly fine to have this Singleton constructor empty
+        // Private constructor to prevent instantiation outside the class
+    }
 
     public static CustomerService getInstance() {
         if (INSTANCE == null)

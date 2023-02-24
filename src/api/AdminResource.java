@@ -11,9 +11,14 @@ import java.util.List;
 import java.util.Map;
 
 public class AdminResource {
-    public static AdminResource INSTANCE;
+    private static AdminResource INSTANCE = null;
     private final CustomerService customerService = CustomerService.getInstance();
     private final ReservationService reservationService = ReservationService.getInstance();
+
+    private AdminResource() {
+        // it's perfectly fine to have this Singleton constructor empty
+        // Private constructor to prevent instantiation outside the class
+    }
 
     public static AdminResource getInstance() {
         if (INSTANCE == null)
@@ -32,6 +37,10 @@ public class AdminResource {
         for (IRoom room : rooms) {
             reservationService.addRoom(room);
         }
+    }
+
+    public IRoom getARoom(String roomId){
+        return reservationService.getARoom(roomId);
     }
 
     public Collection<IRoom> getAllRooms(){

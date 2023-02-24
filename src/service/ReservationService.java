@@ -8,9 +8,16 @@ import model.Room;
 import java.util.*;
 
 public class ReservationService {
-    private static ReservationService INSTANCE;
+    private static ReservationService INSTANCE = null;
+    // allows for no duplicate keys, but values can be duplicate
     private static final Map<String, IRoom> totalHotelRooms = new HashMap<>();
+    private static final Set<IRoom> uniqueRooms = new HashSet<>(); // for preventing duplicate values in totalHotelRooms
     private final Set<Reservation> reservations = new HashSet<>();
+
+    private ReservationService() {
+        // it's perfectly fine to have this Singleton constructor empty
+        // Private constructor to prevent instantiation outside the class
+    }
 
     public static ReservationService getInstance() {
         if (INSTANCE == null)
@@ -24,9 +31,12 @@ public class ReservationService {
     // for admin use only
     // to add a room to hotel system
     public void addRoom(IRoom room) {
-        Room newRoom = new Room(room.getRoomNumber(), room.getRoomType(), room.getRoomPrice());
         // newRoom will contain a room object will all of that room's info
-        totalHotelRooms.putIfAbsent(newRoom.getRoomNumber(), newRoom);
+        Room newRoom = new Room(room.getRoomNumber(), room.getRoomType(), room.getRoomPrice());
+        if (!uniqueRooms.contains(room)) {
+            totalHotelRooms.put(newRoom.getRoomNumber(), newRoom);
+            uniqueRooms.add(newRoom);
+        }
     }
 
     // for admin use only
